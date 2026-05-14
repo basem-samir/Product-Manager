@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Product Manager Pro</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+    <style></style>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="toast-container" id="toast-container"></div>
+
+    <div class="container">
+      <!-- Header -->
+      <header class="app-header">
+        <div class="header-left">
+          <div class="header-icon"><i class="fas fa-boxes-stacked"></i></div>
+          <div class="header-text">
+            <h1>Product Manager</h1>
+            <p>Inventory &amp; Catalog CRUD</p>
+          </div>
+        </div>
+        <div class="stats-row">
+          <div class="stat-chip">
+            <i class="fas fa-cube"></i> Products: <span id="stat-count">0</span>
+          </div>
+          <div class="stat-chip">
+            <i class="fas fa-layer-group"></i> Total Stock:
+            <span id="stat-stock">0</span>
+          </div>
+          <div class="stat-chip">
+            <i class="fas fa-dollar-sign"></i> Portfolio:
+            <span id="stat-value">$0</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Alert -->
+      <div class="alert hidden" id="alert-msg">
+        <i class="fas fa-triangle-exclamation"></i>
+        Title, Price, and Category are required.
+      </div>
+
+      <!-- Form Card -->
+      <div class="card">
+        <div class="card-title">
+          <i class="fas fa-plus"></i>
+          <span id="form-title-label">Add New Product</span>
+        </div>
+        <div class="product-form">
+          <div class="form-grid">
+            <div class="form-field full">
+              <label>Product Title</label>
+              <input
+                type="text"
+                id="title"
+                placeholder="e.g. Wireless Headphones"
+              />
+            </div>
+            <div class="form-field full">
+              <div class="price-row">
+                <div class="form-field">
+                  <label>Price</label>
+                  <input
+                    type="number"
+                    id="price"
+                    placeholder="0.00"
+                    oninput="getTotal()"
+                  />
+                </div>
+                <div class="form-field">
+                  <label>Taxes</label>
+                  <input
+                    type="number"
+                    id="taxs"
+                    placeholder="0.00"
+                    oninput="getTotal()"
+                  />
+                </div>
+                <div class="form-field">
+                  <label>Discount</label>
+                  <input
+                    type="number"
+                    id="discount"
+                    placeholder="0.00"
+                    oninput="getTotal()"
+                  />
+                </div>
+                <div class="form-field">
+                  <label>Total</label>
+                  <input type="text" id="total" value="—" readonly />
+                </div>
+              </div>
+            </div>
+            <div class="form-field">
+              <label>Count</label>
+              <input type="number" id="count" placeholder="1" min="1" />
+            </div>
+            <div class="form-field">
+              <label>Category</label>
+              <input type="text" id="category" placeholder="e.g. Electronics" />
+            </div>
+          </div>
+          <div class="form-actions">
+            <button class="btn btn-primary" id="create" style="flex: 1">
+              <i class="fas fa-plus-circle"></i>
+              <span id="btn-label">Create Product</span>
+            </button>
+            <button
+              class="btn btn-ghost"
+              id="cancel-edit"
+              style="display: none"
+            >
+              <i class="fas fa-xmark"></i> Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Toolbar -->
+      <div class="toolbar">
+        <div class="search-wrap">
+          <i class="fas fa-magnifying-glass"></i>
+          <input
+            type="text"
+            id="search"
+            placeholder="Search by title or category…"
+          />
+        </div>
+        <div class="action-group">
+          <button class="btn btn-pdf" id="exportPDF">
+            <i class="fas fa-file-pdf"></i> PDF
+          </button>
+          <button class="btn btn-excel" id="exportExcel">
+            <i class="fas fa-file-excel"></i> Excel
+          </button>
+          <label class="btn btn-import">
+            <input type="file" id="importExcel" accept=".xlsx,.xls" hidden />
+            <i class="fas fa-upload"></i> Import
+          </label>
+        </div>
+      </div>
+
+      <!-- Delete all -->
+      <div id="delall-section"></div>
+
+      <!-- Table Card -->
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Title</th>
+              <th>Price</th>
+              <th>Taxes</th>
+              <th>Discount</th>
+              <th>Total</th>
+              <th>Stock</th>
+              <th>Category</th>
+              <th style="width: 120px">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+        <div id="empty-state" class="empty-state hidden">
+          <i class="fas fa-box-open"></i>
+          <p>No products yet. Add your first product above.</p>
+        </div>
+      </div>
+
+      <div id="pagination"></div>
+    </div>
+
+    <!-- Duplicate Modal -->
+    <div id="duplicate-modal" class="modal hidden">
+      <div class="modal-content">
+        <div class="modal-icon"><i class="fas fa-copy"></i></div>
+        <h3>Duplicate Found</h3>
+        <p id="modal-message"></p>
+        <div class="modal-actions">
+          <button class="btn btn-primary" id="confirm-add">
+            <i class="fas fa-plus"></i> Increase Count
+          </button>
+          <button class="btn btn-ghost" id="cancel-add">
+            <i class="fas fa-xmark"></i> Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+    <script src="main.js"></script>
+  </body>
+</html>
