@@ -54,17 +54,32 @@ createBtn.onclick = () => {
     return;
   }
 
+  const price = parseFloat(pVal) || 0;
+  const taxs = parseFloat(taxsEl.value) || 0;
+  const discount = parseFloat(discountEl.value) || 0;
+  const computedTotal = price + taxs - discount;
+
   const newProduct = {
     title: tVal,
-    price: parseFloat(pVal),
-    taxs: parseFloat(taxsEl.value) || 0,
-    discount: parseFloat(discountEl.value) || 0,
-    total: parseFloat(totalEl.value.replace("$", "")) || parseFloat(pVal),
+    price: price,
+    taxs: taxs,
+    discount: discount,
+    total: computedTotal > 0 ? computedTotal : 0,
     count: parseInt(countEl.value) || 1,
     category: cVal,
   };
 
   if (mode === "update") {
+    const existing = products.findIndex(
+      (p, idx) =>
+        idx !== indexToUpdate &&
+        p.title.toLowerCase() === newProduct.title.toLowerCase() &&
+        p.category.toLowerCase() === newProduct.category.toLowerCase(),
+    );
+    if (existing !== -1) {
+      toast(`Cannot update: Product already exists.`, "error");
+      return;
+    }
     products[indexToUpdate] = newProduct;
     resetForm();
     save();
@@ -244,7 +259,10 @@ function decreaseCount(i) {
   } else {
     const name = products[i].title;
     products.splice(i, 1);
-    currentPage = 1;
+    filteredProducts = applySearch(searchInput.value);
+    const totalPages = Math.ceil(filteredProducts.length / perPage);
+    if (currentPage > totalPages && totalPages > 0) currentPage = totalPages;
+    if (totalPages === 0) currentPage = 1;
     toast(`"${name}" removed.`, "error");
   }
   save();
@@ -254,7 +272,10 @@ function decreaseCount(i) {
 function removeProduct(i) {
   const name = products[i].title;
   products.splice(i, 1);
-  currentPage = 1;
+  filteredProducts = applySearch(searchInput.value);
+  const totalPages = Math.ceil(filteredProducts.length / perPage);
+  if (currentPage > totalPages && totalPages > 0) currentPage = totalPages;
+  if (totalPages === 0) currentPage = 1;
   save();
   refresh();
   toast(`"${name}" deleted.`, "error");
@@ -437,15 +458,29 @@ document.getElementById("importExcel").addEventListener("change", function (e) {
       const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
       let added = 0;
       rows.forEach((r) => {
-        products.push({
-          title: r.title || "",
+        const title = r.title || "";
+        const category = r.category || "";
+        const newProduct = {
+          title: title,
           price: r.price || 0,
           taxs: r.taxs || 0,
           discount: r.discount || 0,
           total: r.total || 0,
           count: r.count || 1,
-          category: r.category || "",
-        });
+          category: category,
+        };
+
+        const existing = products.findIndex(
+          (p) =>
+            p.title.toLowerCase() === title.toLowerCase() &&
+            p.category.toLowerCase() === category.toLowerCase(),
+        );
+
+        if (existing !== -1) {
+          products[existing].count += newProduct.count;
+        } else {
+          products.push(newProduct);
+        }
         added++;
       });
       save();

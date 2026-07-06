@@ -1,52 +1,52 @@
 :root {
-  /* Warm dark palette */
-  --bg: #0c0a09;
-  --surface: #1c1917;
-  --surface-2: #292524;
-  --surface-3: #44403c;
-  --surface-hover: #57534e;
+  /* Deep Modern Dark Palette */
+  --bg: #09090b;
+  --surface: rgba(24, 24, 27, 0.65);
+  --surface-2: rgba(39, 39, 42, 0.75);
+  --surface-3: #3f3f46;
+  --surface-hover: rgba(63, 63, 70, 0.8);
 
-  /* Amber/Gold accent system */
-  --accent: #f59e0b;
-  --accent-light: #fbbf24;
-  --accent-dim: rgba(245, 158, 11, 0.12);
-  --accent-glow: rgba(245, 158, 11, 0.3);
-  --accent-border: rgba(245, 158, 11, 0.25);
+  /* Neon Cyan/Indigo accent system */
+  --accent: #06b6d4;
+  --accent-light: #22d3ee;
+  --accent-dim: rgba(6, 182, 212, 0.15);
+  --accent-glow: rgba(6, 182, 212, 0.4);
+  --accent-border: rgba(6, 182, 212, 0.3);
 
   /* Semantic colors */
   --green: #10b981;
   --green-dim: rgba(16, 185, 129, 0.12);
   --green-border: rgba(16, 185, 129, 0.25);
-  --red: #ef4444;
-  --red-dim: rgba(239, 68, 68, 0.12);
-  --red-border: rgba(239, 68, 68, 0.25);
+  --red: #f43f5e;
+  --red-dim: rgba(244, 63, 94, 0.12);
+  --red-border: rgba(244, 63, 94, 0.25);
   --orange: #f97316;
   --orange-dim: rgba(249, 115, 22, 0.12);
   --orange-border: rgba(249, 115, 22, 0.25);
-  --purple: #a855f7;
-  --purple-dim: rgba(168, 85, 247, 0.12);
-  --purple-border: rgba(168, 85, 247, 0.25);
+  --purple: #8b5cf6;
+  --purple-dim: rgba(139, 92, 246, 0.12);
+  --purple-border: rgba(139, 92, 246, 0.25);
   --blue: #3b82f6;
   --blue-dim: rgba(59, 130, 246, 0.12);
   --blue-border: rgba(59, 130, 246, 0.25);
 
   /* Text hierarchy */
-  --text: #fafaf9;
-  --text-2: #a8a29e;
-  --text-3: #78716c;
-  --text-muted: #57534e;
+  --text: #f8fafc;
+  --text-2: #cbd5e1;
+  --text-3: #94a3b8;
+  --text-muted: #64748b;
 
   /* Typography */
   --font: "Inter", system-ui, -apple-system, sans-serif;
   --mono: "JetBrains Mono", ui-monospace, monospace;
 
   /* Geometry */
-  --radius: 14px;
-  --radius-sm: 10px;
-  --radius-xs: 6px;
-  --shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.2);
-  --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.5), 0 8px 16px rgba(0, 0, 0, 0.3);
+  --radius: 16px;
+  --radius-sm: 12px;
+  --radius-xs: 8px;
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
   --shadow-glow: 0 0 40px var(--accent-glow);
 }
 
@@ -80,22 +80,43 @@ body::before {
   z-index: 0;
 }
 
-/* Subtle radial glow */
-body::after {
-  content: "";
+/* Decorative Blobs */
+.bg-blob {
   position: fixed;
-  top: -20%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 80vw;
-  height: 60vh;
-  background: radial-gradient(
-    ellipse at center,
-    rgba(245, 158, 11, 0.04) 0%,
-    transparent 70%
-  );
-  pointer-events: none;
+  border-radius: 50%;
+  filter: blur(90px);
   z-index: 0;
+  opacity: 0.3;
+  pointer-events: none;
+  animation: float 20s infinite ease-in-out alternate;
+}
+.blob-1 {
+  width: 500px;
+  height: 500px;
+  background: var(--purple);
+  top: -150px;
+  left: -150px;
+}
+.blob-2 {
+  width: 400px;
+  height: 400px;
+  background: var(--accent);
+  bottom: -100px;
+  right: -100px;
+  animation-delay: -5s;
+}
+.blob-3 {
+  width: 300px;
+  height: 300px;
+  background: var(--blue);
+  top: 30%;
+  left: 20%;
+  animation-delay: -10s;
+}
+@keyframes float {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(30px, 40px) scale(1.05); }
+  100% { transform: translate(-30px, -40px) scale(0.95); }
 }
 
 .container {
@@ -229,13 +250,15 @@ body::after {
 /* ── Card ── */
 .card {
   background: var(--surface);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--radius);
   padding: 28px;
   margin-bottom: 24px;
   position: relative;
   overflow: hidden;
-  transition: border-color 0.3s ease;
+  box-shadow: var(--shadow-md);
+  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 .card::before {
   content: "";
@@ -247,12 +270,13 @@ body::after {
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(245, 158, 11, 0.15),
+    var(--accent-glow),
     transparent
   );
 }
 .card:hover {
-  border-color: rgba(255, 255, 255, 0.09);
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: var(--shadow-lg);
 }
 .card-title {
   font-size: 0.7rem;
@@ -298,7 +322,8 @@ input[type="number"] {
   width: 100%;
   padding: 12px 16px;
   background: var(--surface-2);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--radius-sm);
   color: var(--text);
   font-family: var(--font);
@@ -374,18 +399,18 @@ input[readonly] {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--accent), #d97706);
+  background: linear-gradient(135deg, var(--accent), var(--blue));
   color: #fff;
   box-shadow:
-    0 4px 16px rgba(245, 158, 11, 0.3),
-    0 0 0 1px rgba(245, 158, 11, 0.2);
+    0 4px 16px var(--accent-glow),
+    0 0 0 1px var(--accent-border);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 .btn-primary:hover {
   transform: translateY(-2px);
   box-shadow:
-    0 8px 24px rgba(245, 158, 11, 0.4),
-    0 0 0 1px rgba(245, 158, 11, 0.3);
+    0 8px 24px var(--accent-glow),
+    0 0 0 1px var(--accent-border);
 }
 .btn-primary:active {
   transform: translateY(0);
@@ -498,9 +523,11 @@ input[readonly] {
 .table-wrapper {
   overflow-x: auto;
   border-radius: var(--radius);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   background: var(--surface);
+  backdrop-filter: blur(16px);
   position: relative;
+  box-shadow: var(--shadow-md);
 }
 .table-wrapper::before {
   content: "";
@@ -512,7 +539,7 @@ input[readonly] {
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(245, 158, 11, 0.1),
+    var(--accent-glow),
     transparent
   );
   z-index: 1;
